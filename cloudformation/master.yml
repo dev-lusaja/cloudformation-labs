@@ -1,0 +1,47 @@
+Description: >
+  Static Web Site on S3
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: domain name
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties: 
+      BucketName: !Ref BucketName
+      AccessControl: PublicRead
+      MetricsConfigurations: 
+        - Id: EntireBucket
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Site
+          Value: Static Web Site
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref S3Bucket, '/*']]
+            Principal: '*'
+
+Outputs:
+  WebsiteURL:
+    Value: !GetAtt [S3Bucket, WebsiteURL]
+    Description: URL for website hosted on S3
+  S3BucketSecureURL:
+    Value: !Join ['', ['https://', !GetAtt [S3Bucket, DomainName]]]
+    Description: Name of S3 bucket to hold website content
