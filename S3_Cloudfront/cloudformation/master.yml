@@ -1,0 +1,100 @@
+Description: >
+  Static Web Site using S3 with cloudfornt
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: domain name
+
+  BucketId:
+    Type: String
+    Default: the-s3-bucket
+
+  PriceClass:
+    Type: String
+    Description: The CloudFront distribution price class
+    Default: 'PriceClass_100'
+    AllowedValues:
+      - 'PriceClass_100'
+      - 'PriceClass_200'
+      - 'PriceClass_All'
+
+  ProtocolAccess:
+    Type: String
+    Description: Viewver protocol (http - https)
+    Default: 'allow-all'
+    AllowedValues:
+      - 'allow-all'
+      - 'redirect-to-https'
+      - 'https-only'
+
+Resources:
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        DefaultCacheBehavior:
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+          TargetOriginId: !Ref BucketId
+          ViewerProtocolPolicy: !Ref ProtocolAccess
+        DefaultRootObject: index.html
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 300
+            ErrorCode: 403
+            ResponseCode: 403
+            ResponsePagePath: /error.html
+          - ErrorCachingMinTTL: 300
+            ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /error.html
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+          - DomainName: !Join ['', [!Ref S3Bucket, '.s3.amazonaws.com']]
+            Id: !Ref BucketId
+            S3OriginConfig:
+              OriginAccessIdentity:
+                !Join ['', ['origin-access-identity/cloudfront/', !Ref CloudFrontOriginAccessIdentity]]
+        PriceClass: !Ref PriceClass
+      Tags:
+        - Key: Domain
+          Value: !Ref BucketName
+
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'CloudFront OAI for ${BucketName}'
+
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: public_dir
+          Value: public_dir
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Statement:        
+          - Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref S3Bucket, '/*']]
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+
+Outputs:
+  WebsiteURL:
+    Value: !GetAtt [CloudFrontDistribution, DomainName]
+    Description: Cloudfront Url

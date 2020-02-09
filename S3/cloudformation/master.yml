@@ -10,7 +10,7 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
-    Properties: 
+    Properties:
       BucketName: !Ref BucketName
       AccessControl: PublicRead
       MetricsConfigurations: 
@@ -31,7 +31,7 @@ Resources:
     Properties:
       Bucket: !Ref S3Bucket
       PolicyDocument:
-        Statement:
+        Statement:        
           - Action:
               - s3:GetObject
             Effect: Allow
@@ -42,6 +42,3 @@ Outputs:
   WebsiteURL:
     Value: !GetAtt [S3Bucket, WebsiteURL]
     Description: URL for website hosted on S3
-  S3BucketSecureURL:
-    Value: !Join ['', ['https://', !GetAtt [S3Bucket, DomainName]]]
-    Description: Name of S3 bucket to hold website content
