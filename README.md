@@ -1,5 +1,5 @@
-Static web site using S3 + cloudfront
--------------------------------------
+Examples for create Static web site on AWS
+------------------------------------------
 
 ## requirements
 
