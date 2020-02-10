@@ -96,5 +96,5 @@ Resources:
 
 Outputs:
   WebsiteURL:
-    Value: !GetAtt [CloudFrontDistribution, DomainName]
+    Value: !Join ['', ['http://', !GetAtt [CloudFrontDistribution, DomainName]]] 
     Description: Cloudfront Url
