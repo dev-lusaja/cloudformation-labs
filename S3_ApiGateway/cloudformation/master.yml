@@ -1,0 +1,19 @@
+Description: >
+  Static Web Site using S3 with ApiGateway
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: domain name
+Resources:
+  OpenAPi:
+    Type: AWS::ApiGateway::RestApi
+    Properties: 
+      BinaryMediaTypes: 
+        - application/json
+      BodyS3Location: 
+        Bucket: s3ag.devlusaja.com
+        Key: 'swagger.json'
+      Description: Example Open Api
+      Name: OpenApi
+
