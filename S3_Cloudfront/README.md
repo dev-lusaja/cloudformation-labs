@@ -1,5 +1,5 @@
-Using S3 Bucket with Cloudfront
--------------------------------
+Static Web Site using S3 and Cloudfront
+---------------------------------------
 
 * Architecture
 ~~~~

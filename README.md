@@ -1,5 +1,5 @@
-Examples for create Static web site on AWS
-------------------------------------------
+AWS CloudFormation examples
+---------------------------
 
 ## requirements
 

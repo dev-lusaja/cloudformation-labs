@@ -1,5 +1,5 @@
-Using only S3 Bucket
---------------------
+Static Web Site with S3
+-----------------------
 
 * Architecture
 ~~~~
