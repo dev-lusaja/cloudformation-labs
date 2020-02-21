@@ -1,13 +1,13 @@
 Description: >
-  Static Web Site on S3
+  Bucket for lambda code
 
 Parameters:
   BucketName:
     Type: String
 
+Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
     Properties:
       BucketName: !Ref BucketName
       BucketEncryption:
@@ -15,18 +15,5 @@ Parameters:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
       Tags:
-        - Key: public_dir
-          Value: public_dir
-
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref S3Bucket
-      PolicyDocument:
-        Statement:        
-          - Action:
-              - s3:GetObject
-            Effect: Allow
-            Resource: !Join ['', ['arn:aws:s3:::', !Ref S3Bucket, '/*']]
-            Principal:
-              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+        - Key: source
+          Value: lambda_code

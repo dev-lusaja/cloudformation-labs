@@ -2,25 +2,39 @@ Description: >
   Api Gateway with Lambda function
 
 Parameters:
-  BucketName:
-  Type: String
-  Description: code bucket
+  S3Bucket:
+    Type: String
 
-  BucketKey:
-  Type: String
-  Description: zip name
+  S3Key:
+    Type: String
 
 Resources:
   Function:
-    Type: "AWS::Lambda::Fuction"
+    Type: AWS::Lambda::Function
     Properties:
       Handler: "main.run"
       Role:
         Fn::GetAtt:
-          - "LambdaExecutionRole"
+          - "FunctionRole"
           - "Arn"
-      Code:
-        S3Bucket: !Ref BucketName
-        S3Key: !Ref BucketKey
       Runtime: "python3.8"
       Timeout: 25
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref S3Key
+
+  FunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        Fn::Sub: lambda-role
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+            - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
