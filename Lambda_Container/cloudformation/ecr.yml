@@ -1,0 +1,12 @@
+Description: >
+  ECR for docker images
+
+Parameters:
+  ECRName:
+    Type: String
+
+Resources:
+  ECR:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ECRName

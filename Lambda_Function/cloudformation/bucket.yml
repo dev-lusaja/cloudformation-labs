@@ -2,14 +2,14 @@ Description: >
   Bucket for lambda code
 
 Parameters:
-  BucketName:
+  S3BucketName:
     Type: String
 
 Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref BucketName
+      BucketName: !Ref S3BucketName
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
